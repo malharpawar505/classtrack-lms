@@ -11,7 +11,7 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { motion } from 'framer-motion';
 import { staggerContainer, staggerItem } from '../lib/animations';
-import { Search, UserPlus } from 'lucide-react';
+import { Search, UserPlus, Trash2 } from 'lucide-react';
 
 export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
   const [students, setStudents] = useState([]);
@@ -55,6 +55,25 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
       setForm({ email: '', fullName: '', parentEmail: '', grade: '', password: '' });
       setShowAdd(false); loadStudents();
     } catch (err) { showToast(err.message || 'Failed to add student', 'error'); } finally { setSubmitting(false); }
+  };
+
+  const handleDeleteStudent = async (studentId, e) => {
+    e.stopPropagation();
+    if (!window.confirm('Are you sure you want to delete this student and all their data? This action cannot be undone.')) return;
+    
+    setLoading(true);
+    try {
+      await supabase.from('assignments').delete().eq('student_id', studentId);
+      await supabase.from('attendance').delete().eq('student_id', studentId);
+      const { error } = await supabase.from('profiles').delete().eq('id', studentId);
+      if (error) throw error;
+      
+      showToast('Student deleted successfully', 'success');
+      loadStudents();
+    } catch (err) {
+      showToast('Failed to delete student: ' + err.message, 'error');
+      setLoading(false);
+    }
   };
 
   const filtered = students.filter(s =>
@@ -119,8 +138,8 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
           </Card>
         ) : (
           <Card padding="p-0" className="overflow-hidden">
-            <div className="grid grid-cols-[2fr_1fr_1.5fr_1fr] p-3 border-b border-slate-100 bg-slate-50">
-              {['Student', 'Grade', 'Parent Email', 'This Month'].map(h => (
+            <div className="grid grid-cols-[2fr_1fr_1.5fr_1fr_40px] p-3 border-b border-slate-100 bg-slate-50">
+              {['Student', 'Grade', 'Parent Email', 'This Month', ''].map(h => (
                 <div key={h} className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{h}</div>
               ))}
             </div>
@@ -130,7 +149,7 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
                   key={s.id} 
                   variants={staggerItem}
                   onClick={() => { setSelectedStudent(s); setPage('student-detail'); }} 
-                  className="grid grid-cols-[2fr_1fr_1.5fr_1fr] p-4 items-center cursor-pointer hover:bg-slate-50 transition-colors group"
+                  className="grid grid-cols-[2fr_1fr_1.5fr_1fr_40px] p-4 items-center cursor-pointer hover:bg-slate-50 transition-colors group"
                 >
                   <div className="flex items-center gap-3">
                     <Avatar name={s.full_name} size={36} variant="blue" />
@@ -145,6 +164,15 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
                     <Badge variant={s.attendance_count >= 8 ? 'green' : s.attendance_count >= 4 ? 'accent' : 'default'}>
                       {s.attendance_count} classes
                     </Badge>
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      onClick={(e) => handleDeleteStudent(s.id, e)}
+                      className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors focus:outline-none"
+                      title="Delete Student"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </motion.div>
               ))}

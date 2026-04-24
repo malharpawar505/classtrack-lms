@@ -35,7 +35,7 @@ export const Sidebar = ({ profile, currentPage, setPage, onLogout }) => {
           <Hexagon className="w-6 h-6" strokeWidth={2.5} />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-base font-bold text-slate-900 tracking-tight">ClassTrack</div>
+          <div className="text-base font-bold text-slate-900 tracking-tight">Lumina</div>
           <div className="text-[10px] text-sky-600 uppercase tracking-widest font-bold">{profile?.role}</div>
         </div>
       </div>

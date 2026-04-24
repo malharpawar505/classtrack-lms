@@ -95,7 +95,7 @@ export const AuthPage = ({ showToast }) => {
             <div className="w-12 h-12 bg-white border border-sky-100 rounded-2xl flex items-center justify-center text-sky-500 shadow-lg shadow-sky-500/20 backdrop-blur-md">
               <Hexagon className="w-7 h-7" strokeWidth={2.5} />
             </div>
-            <span className="text-2xl font-bold text-slate-900 tracking-tight font-display">ClassTrack</span>
+            <span className="text-2xl font-bold text-slate-900 tracking-tight font-display">Lumina</span>
           </motion.div>
         </div>
 
@@ -201,7 +201,7 @@ export const AuthPage = ({ showToast }) => {
           transition={{ delay: 0.4 }}
           className="text-center mt-8 text-xs text-slate-400 tracking-wider uppercase font-bold"
         >
-          ClassTrack LMS · Elevating Education
+          Lumina LMS · Elevating Education
         </motion.div>
       </motion.div>
     </div>

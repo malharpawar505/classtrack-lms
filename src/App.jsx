@@ -83,7 +83,7 @@ export default function App() {
       if (page === 'assignments') return <StudentAssignments profile={profile} showToast={showToast} />;
       if (page === 'progress') return <StudentProgress profile={profile} />;
     }
-    return <div className="p-10 text-white">Page not found</div>;
+    return <div className="p-10 text-slate-900">Page not found</div>;
   };
 
   return (

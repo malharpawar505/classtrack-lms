@@ -10,7 +10,7 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { motion } from 'framer-motion';
 import { staggerContainer, staggerItem } from '../lib/animations';
-import { Plus, CheckCircle2 } from 'lucide-react';
+import { Plus, CheckCircle2, Trash2 } from 'lucide-react';
 
 export const TeacherAssignments = ({ profile, showToast }) => {
   const [assignments, setAssignments] = useState([]);
@@ -46,6 +46,14 @@ export const TeacherAssignments = ({ profile, showToast }) => {
     if (isNaN(s) || s < 0 || s > total) { showToast('Invalid score', 'error'); return; }
     const { error } = await supabase.from('assignments').update({ score: s, status: 'graded', graded_at: new Date().toISOString() }).eq('id', id);
     if (error) showToast(error.message, 'error'); else { showToast('Graded ✓', 'success'); load(); }
+  };
+
+  const deleteAssignment = async (id, e) => {
+    e?.stopPropagation?.();
+    if (!window.confirm('Delete this assignment? This cannot be undone.')) return;
+    const { error } = await supabase.from('assignments').delete().eq('id', id);
+    if (error) showToast(error.message, 'error');
+    else { showToast('Assignment deleted', 'success'); load(); }
   };
 
   const pendingCount = assignments.filter(a => a.status === 'pending' || a.status === 'in_progress').length;
@@ -113,14 +121,14 @@ export const TeacherAssignments = ({ profile, showToast }) => {
           </Card>
         ) : (
           <Card padding="p-0" className="overflow-hidden">
-            <div className="grid grid-cols-[2fr_1.5fr_1fr_1fr_1.2fr_1fr] p-3 border-b border-slate-100 bg-slate-50 hidden md:grid">
-              {['Assignment', 'Student', 'Subject', 'Due', 'Status', 'Score'].map(h => (
+            <div className="grid grid-cols-[2fr_1.5fr_1fr_1fr_1.2fr_1fr_40px] p-3 border-b border-slate-100 bg-slate-50 hidden md:grid">
+              {['Assignment', 'Student', 'Subject', 'Due', 'Status', 'Score', ''].map(h => (
                 <div key={h} className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{h}</div>
               ))}
             </div>
             <motion.div variants={staggerContainer} initial="hidden" animate="show" className="divide-y divide-slate-100">
               {assignments.map((a) => (
-                <motion.div key={a.id} variants={staggerItem} className="grid grid-cols-1 md:grid-cols-[2fr_1.5fr_1fr_1fr_1.2fr_1fr] p-4 items-center gap-y-3 hover:bg-slate-50 transition-colors group">
+                <motion.div key={a.id} variants={staggerItem} className="grid grid-cols-1 md:grid-cols-[2fr_1.5fr_1fr_1fr_1.2fr_1fr_40px] p-4 items-center gap-y-3 hover:bg-slate-50 transition-colors group">
                   <div className="text-sm font-bold text-slate-900">{a.title}</div>
                   <div className="text-sm font-semibold text-slate-600">{a.student?.full_name || '—'}</div>
                   <div className="text-xs font-medium text-slate-500">{a.subject}</div>
@@ -134,6 +142,15 @@ export const TeacherAssignments = ({ profile, showToast }) => {
                     ) : (
                       <span className="text-xs font-medium text-slate-400">—</span>
                     )}
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      onClick={(e) => deleteAssignment(a.id, e)}
+                      className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors focus:outline-none opacity-0 group-hover:opacity-100"
+                      title="Delete Assignment"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </motion.div>
               ))}

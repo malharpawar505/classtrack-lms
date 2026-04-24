@@ -5,17 +5,21 @@ import { Avatar } from '../components/ui/Avatar';
 import { Button } from '../components/ui/Button';
 import { StatCard } from '../components/ui/StatCard';
 import { Card } from '../components/ui/Card';
+import { Input } from '../components/ui/Input';
 import { Spinner } from '../components/ui/Spinner';
 import { AttendanceGrid } from '../components/shared/AttendanceGrid';
 import { AssignmentsReadOnly } from '../components/shared/AssignmentsReadOnly';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Mail } from 'lucide-react';
+import { ArrowLeft, Mail, Pencil, Check, X } from 'lucide-react';
 
 export const StudentDetail = ({ student, setPage, showToast }) => {
   const [tab, setTab] = useState('overview');
   const [attendance, setAttendance] = useState([]);
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [editForm, setEditForm] = useState({ grade: student.grade || '', parent_email: student.parent_email || '' });
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -29,12 +33,29 @@ export const StudentDetail = ({ student, setPage, showToast }) => {
   const submitted = assignments.filter(a => a.score != null);
   const avgScore = submitted.length ? Math.round(submitted.reduce((s, a) => s + (Number(a.score) / Number(a.total_marks) * 100), 0) / submitted.length) : 0;
 
+  const saveEdits = async () => {
+    setSaving(true);
+    const { error } = await supabase.from('profiles').update({
+      grade: editForm.grade,
+      parent_email: editForm.parent_email,
+    }).eq('id', student.id);
+    if (error) { showToast('Failed to save: ' + error.message, 'error'); }
+    else {
+      student.grade = editForm.grade;
+      student.parent_email = editForm.parent_email;
+      showToast('Student details updated ✓', 'success');
+      setEditing(false);
+    }
+    setSaving(false);
+  };
+
   const emailParent = () => {
-    if (!student.parent_email) { showToast('No parent email on file', 'error'); return; }
+    const parentEmail = editForm.parent_email || student.parent_email;
+    if (!parentEmail) { showToast('No parent email on file', 'error'); return; }
     const monthAtt = attendance.filter(a => a.date.startsWith(new Date().toISOString().substring(0, 7)));
     const subject = `${student.full_name} — Monthly Progress Report`;
     const body = `Dear Parent,%0D%0A%0D%0AHere is ${student.full_name}'s progress:%0D%0A%0D%0A- Classes: ${monthAtt.length}%0D%0A- Homework done: ${submitted.length}/${assignments.length}%0D%0A- Avg score: ${avgScore}%25%0D%0A%0D%0ABest,%0D%0ATeacher`;
-    window.open(`mailto:${student.parent_email}?subject=${encodeURIComponent(subject)}&body=${body}`, '_blank');
+    window.open(`mailto:${parentEmail}?subject=${encodeURIComponent(subject)}&body=${body}`, '_blank');
   };
 
   return (
@@ -57,7 +78,9 @@ export const StudentDetail = ({ student, setPage, showToast }) => {
             <div className="text-sm font-medium text-slate-500">{student.email}</div>
           </div>
         </div>
-        <Button onClick={emailParent} variant="primary"><Mail className="w-4 h-4 mr-2" /> Email parent</Button>
+        <div className="flex gap-2">
+          <Button onClick={emailParent} variant="primary"><Mail className="w-4 h-4 mr-2" /> Email parent</Button>
+        </div>
       </div>
 
       <div className="px-8 border-b border-slate-200 flex gap-1 bg-slate-50">
@@ -97,15 +120,52 @@ export const StudentDetail = ({ student, setPage, showToast }) => {
                 </div>
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
                   <Card>
-                    <h3 className="text-base font-bold text-slate-900 mb-5">Contact details</h3>
+                    <div className="flex justify-between items-center mb-5">
+                      <h3 className="text-base font-bold text-slate-900">Contact & Info</h3>
+                      {!editing ? (
+                        <Button onClick={() => setEditing(true)} variant="ghost" size="xs">
+                          <Pencil className="w-3.5 h-3.5 mr-1.5" /> Edit
+                        </Button>
+                      ) : (
+                        <div className="flex gap-2">
+                          <Button onClick={saveEdits} variant="primary" size="xs" loading={saving}>
+                            <Check className="w-3.5 h-3.5 mr-1" /> Save
+                          </Button>
+                          <Button onClick={() => { setEditing(false); setEditForm({ grade: student.grade || '', parent_email: student.parent_email || '' }); }} variant="ghost" size="xs">
+                            <X className="w-3.5 h-3.5 mr-1" /> Cancel
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <div className="text-[11px] text-slate-500 uppercase tracking-wider font-bold mb-1">Student Email</div>
                         <div className="text-sm font-bold text-slate-900">{student.email}</div>
                       </div>
                       <div>
+                        <div className="text-[11px] text-slate-500 uppercase tracking-wider font-bold mb-1">Grade</div>
+                        {editing ? (
+                          <Input 
+                            value={editForm.grade} 
+                            onChange={e => setEditForm({ ...editForm, grade: e.target.value })} 
+                            placeholder="e.g. Grade 11"
+                          />
+                        ) : (
+                          <div className="text-sm font-bold text-slate-900">{student.grade || <span className="text-slate-400 font-medium">Not set</span>}</div>
+                        )}
+                      </div>
+                      <div className="md:col-span-2">
                         <div className="text-[11px] text-slate-500 uppercase tracking-wider font-bold mb-1">Parent Email</div>
-                        <div className="text-sm font-bold text-slate-900">{student.parent_email || <span className="text-slate-400 font-medium">Not provided</span>}</div>
+                        {editing ? (
+                          <Input 
+                            type="email"
+                            value={editForm.parent_email} 
+                            onChange={e => setEditForm({ ...editForm, parent_email: e.target.value })} 
+                            placeholder="parent@example.com"
+                          />
+                        ) : (
+                          <div className="text-sm font-bold text-slate-900">{student.parent_email || <span className="text-slate-400 font-medium">Not provided</span>}</div>
+                        )}
                       </div>
                     </div>
                   </Card>

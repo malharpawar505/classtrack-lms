@@ -75,9 +75,22 @@ export const AuthPage = ({ showToast }) => {
         className="absolute inset-0 z-0"
       />
 
-      {/* Decorative Orbs */}
-      <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-sky-200/50 blur-[100px] pointer-events-none" />
-      <div className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-blue-200/50 blur-[100px] pointer-events-none" />
+      {/* Decorative Animated Orbs */}
+      <motion.div 
+        animate={{ x: [0, 30, -20, 0], y: [0, -20, 30, 0], scale: [1, 1.1, 0.95, 1] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-sky-200/50 blur-[100px] pointer-events-none" 
+      />
+      <motion.div 
+        animate={{ x: [0, -30, 20, 0], y: [0, 20, -30, 0], scale: [1, 0.95, 1.1, 1] }}
+        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-blue-200/50 blur-[100px] pointer-events-none" 
+      />
+      <motion.div 
+        animate={{ x: [0, 15, -15, 0], y: [0, -15, 15, 0] }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-indigo-100/30 blur-[80px] pointer-events-none" 
+      />
 
       <motion.div 
         initial={{ opacity: 0, y: 30, scale: 0.95 }}

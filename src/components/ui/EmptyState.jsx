@@ -10,12 +10,12 @@ export const EmptyState = ({ title, description, action }) => (
     <motion.div 
       animate={{ y: [-4, 4] }}
       transition={{ duration: 2, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}
-      className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 mx-auto mb-5 flex items-center justify-center text-2xl text-[var(--text-muted)]"
+      className="w-16 h-16 rounded-2xl bg-sky-50 border border-sky-100 mx-auto mb-6 flex items-center justify-center text-3xl text-sky-300 shadow-sm"
     >
       ○
     </motion.div>
-    <h3 className="text-base font-semibold text-white mb-1.5 tracking-tight">{title}</h3>
-    <p className="text-sm text-[var(--text-muted)] max-w-[360px] mx-auto leading-relaxed mb-5">
+    <h3 className="text-lg font-bold text-slate-800 mb-2 tracking-tight">{title}</h3>
+    <p className="text-sm text-slate-500 max-w-[360px] mx-auto leading-relaxed mb-6 font-medium">
       {description}
     </p>
     {action}

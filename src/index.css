@@ -1,14 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --color-dark-bg: #0A0F1E;
-  --color-dark-panel: #111827;
-  --color-dark-surface: #1F2937;
-  --color-dark-border: rgba(255, 255, 255, 0.1);
-  --color-primary: #7C3AED;
-  --color-primary-hover: #6D28D9;
-  --color-cyan: #06B6D4;
-  --color-cyan-hover: #0891B2;
+  --color-primary: #0ea5e9; /* Sky 500 */
+  --color-primary-hover: #0284c7; /* Sky 600 */
+  --color-secondary: #3b82f6; /* Blue 500 */
   
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-display: 'Syne', system-ui, sans-serif;
@@ -16,17 +11,17 @@
 
 @layer base {
   :root {
-    --background: #0A0F1E;
-    --foreground: #F8FAFC;
+    --background: #f8fafc; /* Slate 50 */
+    --foreground: #0f172a; /* Slate 900 */
     
-    --panel: #111827;
-    --panel-border: rgba(255,255,255,0.08);
+    --panel: #ffffff;
+    --panel-border: rgba(15, 23, 42, 0.08); /* Slate 900 at 8% */
     
-    --primary: #7C3AED;
-    --primary-hover: #6D28D9;
-    --cyan: #06B6D4;
+    --primary: #0ea5e9;
+    --primary-hover: #0284c7;
+    --cyan: #38bdf8; /* Sky 400 */
     
-    --text-muted: #94A3B8;
+    --text-muted: #64748b; /* Slate 500 */
   }
 
   html, body {
@@ -39,26 +34,26 @@
 
 @layer utilities {
   .glass-panel {
-    @apply bg-white/5 backdrop-blur-md border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)];
+    @apply bg-white/80 backdrop-blur-xl border border-slate-200 shadow-sm;
   }
   
   .glass-panel-strong {
-    @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)];
+    @apply bg-white/95 backdrop-blur-2xl border border-slate-200 shadow-xl shadow-sky-900/5;
   }
 
   .text-glow {
-    text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+    text-shadow: 0 0 10px rgba(14, 165, 233, 0.4);
   }
   
   .text-glow-primary {
-    text-shadow: 0 0 15px rgba(124, 58, 237, 0.6);
+    text-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
   }
   
   .box-glow {
-    box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+    box-shadow: 0 0 20px rgba(14, 165, 233, 0.15);
   }
   
   .box-glow-cyan {
-    box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
   }
 }

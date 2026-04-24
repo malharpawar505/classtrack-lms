@@ -59,25 +59,25 @@ export const StudentAssignments = ({ profile, showToast }) => {
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex gap-2 mb-6 bg-white/5 p-1 rounded-xl w-fit border border-white/5"
+          className="flex gap-2 mb-6 bg-slate-100 p-1 rounded-xl w-fit border border-slate-200"
         >
           {[['all', 'All'], ['active', 'Active'], ['done', 'Done']].map(([k, label]) => (
             <button 
               key={k} 
               onClick={() => setFilter(k)} 
-              className={`relative px-4 py-2 rounded-lg text-sm font-semibold transition-colors focus:outline-none ${
-                filter === k ? 'text-white' : 'text-[var(--text-muted)] hover:text-white'
+              className={`relative px-4 py-2 rounded-lg text-sm font-bold transition-colors focus:outline-none ${
+                filter === k ? 'text-sky-700' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               {filter === k && (
                 <motion.div 
                   layoutId="assignmentFilter"
-                  className="absolute inset-0 bg-white/10 rounded-lg shadow-sm"
+                  className="absolute inset-0 bg-white rounded-lg shadow-sm border border-slate-200"
                   transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 />
               )}
               <span className="relative z-10 flex items-center gap-2">
-                {label} <span className="opacity-50 text-xs">{counts[k]}</span>
+                {label} <span className="text-xs opacity-70">{counts[k]}</span>
               </span>
             </button>
           ))}
@@ -100,7 +100,7 @@ export const StudentAssignments = ({ profile, showToast }) => {
                     layout
                     exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
                   >
-                    <Card hoverable className={isOverdue ? "border-red-500/30 bg-red-500/5" : "border-white/5"}>
+                    <Card hoverable className={isOverdue ? "border-red-300 bg-red-50" : "border-slate-200 bg-white"}>
                       <div className="flex justify-between items-start gap-4 mb-4">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-2 flex-wrap">
@@ -108,15 +108,15 @@ export const StudentAssignments = ({ profile, showToast }) => {
                             <StatusBadge status={a.status} />
                             {isOverdue && <Badge variant="red" icon={<AlertTriangle className="w-3 h-3"/>}>Overdue</Badge>}
                           </div>
-                          <h3 className="text-lg font-bold text-white mb-1 tracking-tight">{a.title}</h3>
-                          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[var(--text-muted)] font-medium">
+                          <h3 className="text-lg font-bold text-slate-900 mb-1 tracking-tight">{a.title}</h3>
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-500 font-medium">
                             <span>Due {new Date(a.due_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
                             {daysLeft >= 0 && !['submitted', 'graded'].includes(a.status) && (
-                              <span className={daysLeft <= 2 ? "text-[var(--cyan)]" : ""}>
+                              <span className={daysLeft <= 2 ? "text-red-500 font-bold" : ""}>
                                 {daysLeft === 0 ? 'Due today' : daysLeft === 1 ? 'Due tomorrow' : `${daysLeft} days left`}
                               </span>
                             )}
-                            <span className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-white/30" /> {a.total_marks} marks</span>
+                            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-slate-300" /> {a.total_marks} marks</span>
                           </div>
                         </div>
                         
@@ -125,23 +125,23 @@ export const StudentAssignments = ({ profile, showToast }) => {
                             initial={{ scale: 0, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ type: "spring" }}
-                            className="text-right shrink-0 bg-[var(--primary)]/10 px-4 py-2 rounded-xl border border-[var(--primary)]/20"
+                            className="text-right shrink-0 bg-sky-50 px-4 py-2 rounded-xl border border-sky-100"
                           >
-                            <div className="text-2xl font-bold text-[var(--cyan)] font-mono tracking-tight">{a.score}<span className="text-sm text-[var(--text-muted)] font-sans ml-0.5">/{a.total_marks}</span></div>
-                            <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-widest font-semibold">Scored</div>
+                            <div className="text-2xl font-bold text-sky-600 font-mono tracking-tight">{a.score}<span className="text-sm text-sky-400 font-sans ml-0.5">/{a.total_marks}</span></div>
+                            <div className="text-[10px] text-sky-500 uppercase tracking-widest font-bold">Scored</div>
                           </motion.div>
                         )}
                       </div>
 
                       {/* Status change actions */}
                       {!['graded'].includes(a.status) && (
-                        <div className="flex gap-2 pt-4 border-t border-white/10 mt-2">
+                        <div className="flex gap-2 pt-4 border-t border-slate-100 mt-2">
                           {a.status === 'pending' && (
                             <>
-                              <Button onClick={() => updateStatus(a.id, 'in_progress')} variant="subtle" size="sm" loading={isUpdating}>
+                              <Button onClick={() => updateStatus(a.id, 'in_progress')} variant="ghost" size="sm" loading={isUpdating}>
                                 <CircleDashed className="w-4 h-4 mr-1.5" /> Start Working
                               </Button>
-                              <Button onClick={() => updateStatus(a.id, 'submitted')} variant="accent" size="sm" loading={isUpdating}>
+                              <Button onClick={() => updateStatus(a.id, 'submitted')} variant="primary" size="sm" loading={isUpdating}>
                                 <CheckCircle2 className="w-4 h-4 mr-1.5" /> Mark Submitted
                               </Button>
                             </>
@@ -151,7 +151,7 @@ export const StudentAssignments = ({ profile, showToast }) => {
                               <Button onClick={() => updateStatus(a.id, 'pending')} variant="ghost" size="sm" loading={isUpdating}>
                                 <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Todo
                               </Button>
-                              <Button onClick={() => updateStatus(a.id, 'submitted')} variant="accent" size="sm" loading={isUpdating}>
+                              <Button onClick={() => updateStatus(a.id, 'submitted')} variant="primary" size="sm" loading={isUpdating}>
                                 <CheckCircle2 className="w-4 h-4 mr-1.5" /> Submit
                               </Button>
                             </>
@@ -161,7 +161,7 @@ export const StudentAssignments = ({ profile, showToast }) => {
                               <Button onClick={() => updateStatus(a.id, 'in_progress')} variant="ghost" size="sm" loading={isUpdating}>
                                 <ArrowLeft className="w-4 h-4 mr-1.5" /> Reopen
                               </Button>
-                              <div className="text-xs text-[var(--text-muted)] self-center ml-auto font-medium">Waiting for teacher to grade</div>
+                              <div className="text-xs text-slate-400 self-center ml-auto font-bold">Waiting for teacher to grade</div>
                             </>
                           )}
                         </div>

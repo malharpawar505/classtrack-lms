@@ -25,7 +25,7 @@ export const AttendanceGrid = ({ attendance }) => {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="flex justify-between items-center mb-6">
-        <div className="text-xl font-bold text-white tracking-tight">{monthName}</div>
+        <div className="text-xl font-bold text-slate-900 tracking-tight">{monthName}</div>
         <div className="flex gap-2">
           <Button onClick={() => setViewDate(new Date(year, month - 1, 1))} variant="ghost" size="xs">
             <ChevronLeft className="w-4 h-4" />
@@ -39,7 +39,7 @@ export const AttendanceGrid = ({ attendance }) => {
       <Card padding="p-6">
         <div className="grid grid-cols-7 gap-2 mb-3">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
-            <div key={d} className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider text-center py-1.5">{d}</div>
+            <div key={d} className="text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center py-1.5">{d}</div>
           ))}
         </div>
         <div className="grid grid-cols-7 gap-2">
@@ -57,15 +57,15 @@ export const AttendanceGrid = ({ attendance }) => {
                 className={cn(
                   "aspect-square rounded-xl p-2 flex flex-col justify-between transition-all",
                   record 
-                    ? "bg-[var(--primary)] text-white shadow-lg shadow-[var(--primary)]/20" 
+                    ? "bg-sky-500 text-white shadow-md shadow-sky-500/20" 
                     : isToday 
-                      ? "bg-[var(--cyan)]/20 border border-[var(--cyan)]/30 text-white" 
-                      : "bg-white/5 border border-white/5 text-[var(--text-muted)]"
+                      ? "bg-sky-50 border border-sky-200 text-sky-800 font-bold" 
+                      : "bg-slate-50 border border-slate-100 text-slate-600"
                 )}
               >
-                <div className="text-sm font-medium">{day}</div>
+                <div className="text-sm font-bold">{day}</div>
                 {record && (
-                  <div className="text-[9px] font-bold text-emerald-300 font-mono tracking-tighter">
+                  <div className="text-[9px] font-bold text-sky-100 font-mono tracking-tighter">
                     {record.punch_time?.substring(0, 5)}
                   </div>
                 )}
@@ -73,12 +73,12 @@ export const AttendanceGrid = ({ attendance }) => {
             );
           })}
         </div>
-        <div className="flex gap-5 mt-6 pt-5 border-t border-white/10 text-xs text-[var(--text-muted)] font-medium">
+        <div className="flex gap-5 mt-6 pt-5 border-t border-slate-100 text-xs text-slate-600 font-bold">
           <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 bg-[var(--primary)] rounded-sm" /> Present
+            <div className="w-2.5 h-2.5 bg-sky-500 rounded-sm" /> Present
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 bg-[var(--cyan)]/20 border border-[var(--cyan)]/30 rounded-sm" /> Today
+            <div className="w-2.5 h-2.5 bg-sky-50 border border-sky-200 rounded-sm" /> Today
           </div>
         </div>
       </Card>

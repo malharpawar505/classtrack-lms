@@ -5,12 +5,12 @@ import { cn } from '../../lib/utils';
 import { buttonPress } from '../../lib/animations';
 
 const variants = {
-  primary: "bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] shadow-lg shadow-[var(--primary)]/20",
-  accent: "bg-[var(--cyan)] text-white hover:bg-[var(--cyan-hover)] shadow-lg shadow-[var(--cyan)]/20 text-glow",
-  ghost: "bg-white/5 text-white hover:bg-white/10 border border-white/10",
-  subtle: "bg-transparent text-white hover:bg-white/5",
-  danger: "bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20",
-  success: "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20",
+  primary: "bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] shadow-md shadow-sky-500/20",
+  accent: "bg-[var(--secondary)] text-white hover:bg-blue-600 shadow-md shadow-blue-500/20",
+  ghost: "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200",
+  subtle: "bg-transparent text-slate-600 hover:bg-slate-100",
+  danger: "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200",
+  success: "bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200",
 };
 
 const sizes = {
@@ -47,9 +47,8 @@ export const Button = React.forwardRef(({
       disabled={disabled || loading}
       {...props}
     >
-      {/* Shimmer sweep effect for primary and accent */}
       {(variant === 'primary' || variant === 'accent') && !disabled && !loading && (
-        <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
+        <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
       )}
       
       {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

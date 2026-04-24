@@ -53,24 +53,24 @@ export const TeacherReports = ({ showToast }) => {
           <motion.div variants={staggerContainer} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             {students.map((s) => (
               <motion.div key={s.id} variants={staggerItem}>
-                <Card hoverable className="flex flex-col h-full border-white/5 hover:border-white/10 transition-colors">
+                <Card hoverable className="flex flex-col h-full border-slate-200">
                   <div className="flex items-center gap-3 mb-5">
-                    <Avatar name={s.full_name} size={42} />
+                    <Avatar name={s.full_name} size={42} variant="blue" />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-white truncate">{s.full_name}</div>
-                      <div className="text-xs text-[var(--text-muted)] truncate">{s.parent_email || 'No parent email'}</div>
+                      <div className="text-sm font-bold text-slate-900 truncate">{s.full_name}</div>
+                      <div className="text-xs font-medium text-slate-500 truncate">{s.parent_email || 'No parent email'}</div>
                     </div>
                   </div>
                   
-                  <div className="bg-black/20 rounded-xl p-4 mb-5 border border-white/5">
+                  <div className="bg-slate-50 rounded-xl p-4 mb-5 border border-slate-100">
                     {[
                       ['Attendance', `${s.att} classes`], 
                       ['Homework', `${s.hwDone}/${s.hwTotal}`], 
                       ['Avg. Score', `${s.avg}%`]
                     ].map(([k, v], idx) => (
-                      <div key={k} className={`flex justify-between items-center ${idx === 2 ? '' : 'mb-2 pb-2 border-b border-white/5'}`}>
-                        <span className="text-xs font-medium text-[var(--text-muted)]">{k}</span>
-                        <span className="text-sm font-bold text-white tracking-tight">{v}</span>
+                      <div key={k} className={`flex justify-between items-center ${idx === 2 ? '' : 'mb-2 pb-2 border-b border-slate-200'}`}>
+                        <span className="text-xs font-bold text-slate-500">{k}</span>
+                        <span className="text-sm font-bold text-slate-900 tracking-tight">{v}</span>
                       </div>
                     ))}
                   </div>

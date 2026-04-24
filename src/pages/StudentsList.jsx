@@ -68,7 +68,7 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
         title="Students" 
         subtitle={`${students.length} enrolled`} 
         action={
-          <Button onClick={() => setShowAdd(!showAdd)} variant={showAdd ? 'ghost' : 'accent'}>
+          <Button onClick={() => setShowAdd(!showAdd)} variant={showAdd ? 'ghost' : 'primary'}>
             {showAdd ? 'Cancel' : <><UserPlus className="w-4 h-4 mr-2"/> Add student</>}
           </Button>
         } 
@@ -79,8 +79,8 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
           animate={{ height: showAdd ? 'auto' : 0, opacity: showAdd ? 1 : 0, marginBottom: showAdd ? 24 : 0 }}
           className="overflow-hidden"
         >
-          <Card className="border-[var(--primary)]/30 box-glow">
-            <h3 className="text-base font-semibold text-white mb-4">Register new student</h3>
+          <Card className="border-sky-200 bg-sky-50 shadow-md">
+            <h3 className="text-base font-bold text-slate-900 mb-4">Register new student</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input label="Full Name *" value={form.fullName} onChange={e => setForm({ ...form, fullName: e.target.value })} placeholder="e.g. Adeena Javaid" />
               <Input label="Student Email *" type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="student@gmail.com" />
@@ -94,8 +94,8 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
               <Button onClick={handleAdd} variant="primary" loading={submitting}>Create Account</Button>
               <Button onClick={() => setShowAdd(false)} variant="ghost">Cancel</Button>
             </div>
-            <div className="text-xs text-[var(--cyan)] mt-4 p-3 bg-[var(--cyan)]/10 rounded-lg border border-[var(--cyan)]/20 flex items-center gap-2">
-              <span className="text-base">ℹ</span> Share the email + password with the student so they can log in.
+            <div className="text-xs text-sky-700 mt-4 p-3 bg-sky-100 rounded-lg border border-sky-200 flex items-center gap-2 font-medium">
+              <span className="text-base">ℹ</span> Share the email + password with the student so they can log in. Note: Please ensure "Confirm Email" is disabled in your Supabase settings if emails are not being received.
             </div>
           </Card>
         </motion.div>
@@ -114,33 +114,33 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
             <EmptyState 
               title={search ? 'No matches found' : 'No students yet'} 
               description={search ? 'Try a different search term.' : 'Add your first student to start tracking attendance and progress.'} 
-              action={!search && <Button onClick={() => setShowAdd(true)} variant="accent"><UserPlus className="w-4 h-4 mr-2"/> Add student</Button>} 
+              action={!search && <Button onClick={() => setShowAdd(true)} variant="primary"><UserPlus className="w-4 h-4 mr-2"/> Add student</Button>} 
             />
           </Card>
         ) : (
           <Card padding="p-0" className="overflow-hidden">
-            <div className="grid grid-cols-[2fr_1fr_1.5fr_1fr] p-3 border-b border-white/5 bg-black/20">
+            <div className="grid grid-cols-[2fr_1fr_1.5fr_1fr] p-3 border-b border-slate-100 bg-slate-50">
               {['Student', 'Grade', 'Parent Email', 'This Month'].map(h => (
-                <div key={h} className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">{h}</div>
+                <div key={h} className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{h}</div>
               ))}
             </div>
-            <motion.div variants={staggerContainer} initial="hidden" animate="show" className="divide-y divide-white/5">
+            <motion.div variants={staggerContainer} initial="hidden" animate="show" className="divide-y divide-slate-100">
               {filtered.map((s) => (
                 <motion.div 
                   key={s.id} 
                   variants={staggerItem}
                   onClick={() => { setSelectedStudent(s); setPage('student-detail'); }} 
-                  className="grid grid-cols-[2fr_1fr_1.5fr_1fr] p-4 items-center cursor-pointer hover:bg-white/5 transition-colors group"
+                  className="grid grid-cols-[2fr_1fr_1.5fr_1fr] p-4 items-center cursor-pointer hover:bg-slate-50 transition-colors group"
                 >
                   <div className="flex items-center gap-3">
-                    <Avatar name={s.full_name} size={36} />
+                    <Avatar name={s.full_name} size={36} variant="blue" />
                     <div className="min-w-0">
-                      <div className="text-sm font-semibold text-white group-hover:text-[var(--cyan)] transition-colors">{s.full_name}</div>
-                      <div className="text-xs text-[var(--text-muted)] truncate">{s.email}</div>
+                      <div className="text-sm font-bold text-slate-900 group-hover:text-sky-600 transition-colors">{s.full_name}</div>
+                      <div className="text-xs font-medium text-slate-500 truncate">{s.email}</div>
                     </div>
                   </div>
-                  <div className="text-sm text-white font-medium">{s.grade || '—'}</div>
-                  <div className="text-xs text-[var(--text-muted)] truncate">{s.parent_email || '—'}</div>
+                  <div className="text-sm text-slate-900 font-bold">{s.grade || '—'}</div>
+                  <div className="text-xs font-medium text-slate-500 truncate">{s.parent_email || '—'}</div>
                   <div>
                     <Badge variant={s.attendance_count >= 8 ? 'green' : s.attendance_count >= 4 ? 'accent' : 'default'}>
                       {s.attendance_count} classes

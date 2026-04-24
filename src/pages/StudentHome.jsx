@@ -55,7 +55,6 @@ export const StudentHome = ({ profile, showToast }) => {
 
   if (loading) return <PageWrapper><PageHeader title={`Hello, ${profile.full_name?.split(' ')[0]}`} /><Spinner /></PageWrapper>;
 
-  // Typewriter effect logic is easy with framer motion
   const greeting = `Hello, ${profile.full_name?.split(' ')[0] || 'there'}`;
   
   return (
@@ -77,8 +76,7 @@ export const StudentHome = ({ profile, showToast }) => {
       />
       <div className="p-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <div className="relative overflow-hidden rounded-2xl glass-panel-strong border border-white/10 shadow-2xl mb-8 group">
-            {/* Background Particles for Hero Section */}
+          <div className="relative overflow-hidden rounded-2xl bg-white border border-slate-200 shadow-xl shadow-sky-900/5 mb-8 group">
             <Particles
               id="tsparticles-hero"
               init={particlesInit}
@@ -86,46 +84,46 @@ export const StudentHome = ({ profile, showToast }) => {
                 background: { color: { value: "transparent" } },
                 fpsLimit: 60,
                 particles: {
-                  color: { value: ["#7C3AED", "#06B6D4"] },
-                  links: { color: "#ffffff", distance: 150, enable: true, opacity: 0.1, width: 1 },
+                  color: { value: ["#0ea5e9", "#3b82f6"] },
+                  links: { color: "#0ea5e9", distance: 150, enable: true, opacity: 0.2, width: 1 },
                   move: { enable: true, speed: 0.6, direction: "none", random: true, straight: false, outModes: { default: "bounce" } },
                   number: { density: { enable: true, area: 800 }, value: 30 },
-                  opacity: { value: 0.5 },
+                  opacity: { value: 0.6 },
                   shape: { type: "circle" },
-                  size: { value: { min: 1, max: 3 } },
+                  size: { value: { min: 2, max: 4 } },
                 },
                 detectRetina: true,
               }}
               className="absolute inset-0 z-0 opacity-50"
             />
             
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--cyan)]/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-[var(--cyan)]/30 transition-colors duration-1000" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-[var(--primary)]/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-[var(--primary)]/30 transition-colors duration-1000" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-sky-100 rounded-full blur-[80px] pointer-events-none group-hover:bg-sky-200 transition-colors duration-1000" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-50 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-100 transition-colors duration-1000" />
             
             <div className="relative z-10 p-8 md:p-10">
-              <div className="text-[11px] font-semibold text-white/50 uppercase tracking-[0.15em] mb-4">Today's Attendance</div>
+              <div className="text-[11px] font-bold text-sky-600 uppercase tracking-[0.15em] mb-4">Today's Attendance</div>
               {todayRecord ? (
                 <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight flex items-center gap-3">
-                    <CheckCircleIcon className="w-8 h-8 text-emerald-400" /> You're checked in
+                  <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6 tracking-tight flex items-center gap-3">
+                    <CheckCircleIcon className="w-8 h-8 text-emerald-500" /> You're checked in
                   </h2>
-                  <div className="flex flex-wrap gap-8 text-sm bg-black/20 w-fit px-6 py-4 rounded-xl border border-white/5">
+                  <div className="flex flex-wrap gap-8 text-sm bg-white/80 backdrop-blur-sm w-fit px-6 py-4 rounded-xl border border-slate-200 shadow-sm">
                     <div>
-                      <span className="text-[var(--text-muted)] uppercase tracking-wider text-[10px] font-bold block mb-1">Time</span>
-                      <span className="text-white font-mono font-bold text-lg">{todayRecord.punch_time?.substring(0, 5)}</span>
+                      <span className="text-slate-500 uppercase tracking-wider text-[10px] font-bold block mb-1">Time</span>
+                      <span className="text-slate-900 font-mono font-bold text-lg">{todayRecord.punch_time?.substring(0, 5)}</span>
                     </div>
-                    <div className="w-[1px] bg-white/10"></div>
+                    <div className="w-[1px] bg-slate-200"></div>
                     <div>
-                      <span className="text-[var(--text-muted)] uppercase tracking-wider text-[10px] font-bold block mb-1">Subject</span>
-                      <span className="text-white font-semibold text-lg">{todayRecord.subject}</span>
+                      <span className="text-slate-500 uppercase tracking-wider text-[10px] font-bold block mb-1">Subject</span>
+                      <span className="text-slate-900 font-bold text-lg">{todayRecord.subject}</span>
                     </div>
                   </div>
                 </motion.div>
               ) : (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Ready for class?</h2>
-                  <p className="text-[var(--text-muted)] mb-8 text-sm md:text-base max-w-md">Punch in to mark your attendance for today. Your teacher will be notified automatically.</p>
-                  <Button onClick={handlePunch} variant="accent" size="lg" loading={punching} className="shadow-[var(--cyan)]/30 shadow-xl px-8">
+                  <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3 tracking-tight">Ready for class?</h2>
+                  <p className="text-slate-500 font-medium mb-8 text-sm md:text-base max-w-md">Punch in to mark your attendance for today. Your teacher will be notified automatically.</p>
+                  <Button onClick={handlePunch} variant="primary" size="lg" loading={punching} className="shadow-sky-500/30 shadow-lg px-8 ring-2 ring-sky-500 ring-offset-2 ring-offset-white">
                     <CalendarCheck className="w-5 h-5 mr-2" /> Punch In Now
                   </Button>
                 </motion.div>
@@ -140,8 +138,8 @@ export const StudentHome = ({ profile, showToast }) => {
         </div>
 
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mb-4">
-          <h3 className="text-base font-semibold text-white tracking-tight flex items-center gap-2">
-            <Clock className="w-4 h-4 text-[var(--cyan)]" /> Recent classes
+          <h3 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <Clock className="w-4 h-4 text-sky-500" /> Recent classes
           </h3>
         </motion.div>
         
@@ -151,19 +149,19 @@ export const StudentHome = ({ profile, showToast }) => {
           </motion.div>
         ) : (
           <Card padding="p-0" className="overflow-hidden">
-            <motion.div variants={staggerContainer} initial="hidden" animate="show" className="divide-y divide-white/5">
+            <motion.div variants={staggerContainer} initial="hidden" animate="show" className="divide-y divide-slate-100">
               {recent.map((r) => (
-                <motion.div key={r.id} variants={staggerItem} className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
+                <motion.div key={r.id} variants={staggerItem} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg font-bold text-white shadow-inner">
+                    <div className="w-11 h-11 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-lg font-bold text-slate-700 shadow-sm">
                       {new Date(r.date).getDate()}
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-white">{r.subject}</div>
-                      <div className="text-xs text-[var(--text-muted)]">{new Date(r.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</div>
+                      <div className="text-sm font-bold text-slate-900">{r.subject}</div>
+                      <div className="text-xs font-medium text-slate-500">{new Date(r.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</div>
                     </div>
                   </div>
-                  <Badge variant="green" icon={<span className="mr-1 inline-block w-1.5 h-1.5 rounded-full bg-emerald-400"></span>}>
+                  <Badge variant="green" icon={<span className="mr-1 inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>}>
                     {r.punch_time?.substring(0, 5)}
                   </Badge>
                 </motion.div>

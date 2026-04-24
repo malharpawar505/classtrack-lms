@@ -22,7 +22,7 @@ export const Card = React.forwardRef(({
     <Component
       ref={ref}
       className={cn(
-        "glass-panel rounded-xl text-[var(--foreground)] relative overflow-hidden",
+        "glass-panel rounded-xl text-slate-900 relative overflow-hidden",
         padding,
         className
       )}

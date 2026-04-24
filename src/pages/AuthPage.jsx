@@ -53,7 +53,7 @@ export const AuthPage = ({ showToast }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 relative overflow-hidden">
       {/* Background Particles */}
       <Particles
         id="tsparticles"
@@ -62,13 +62,13 @@ export const AuthPage = ({ showToast }) => {
           background: { color: { value: "transparent" } },
           fpsLimit: 60,
           particles: {
-            color: { value: ["#7C3AED", "#06B6D4"] },
-            links: { color: "#ffffff", distance: 150, enable: true, opacity: 0.1, width: 1 },
-            move: { enable: true, speed: 1, direction: "none", random: true, straight: false, outModes: { default: "bounce" } },
-            number: { density: { enable: true, area: 800 }, value: 40 },
-            opacity: { value: 0.3 },
+            color: { value: ["#0ea5e9", "#3b82f6"] },
+            links: { color: "#0ea5e9", distance: 150, enable: true, opacity: 0.2, width: 1 },
+            move: { enable: true, speed: 1.5, direction: "none", random: true, straight: false, outModes: { default: "bounce" } },
+            number: { density: { enable: true, area: 800 }, value: 50 },
+            opacity: { value: 0.6 },
             shape: { type: "circle" },
-            size: { value: { min: 1, max: 3 } },
+            size: { value: { min: 2, max: 4 } },
           },
           detectRetina: true,
         }}
@@ -76,13 +76,13 @@ export const AuthPage = ({ showToast }) => {
       />
 
       {/* Decorative Orbs */}
-      <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[var(--primary)]/20 blur-[100px] pointer-events-none" />
-      <div className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-[var(--cyan)]/20 blur-[100px] pointer-events-none" />
+      <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-sky-200/50 blur-[100px] pointer-events-none" />
+      <div className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-blue-200/50 blur-[100px] pointer-events-none" />
 
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6, type: "spring", stiffness: 300, damping: 25 }}
         className="w-full max-w-[420px] relative z-10"
       >
         <div className="text-center mb-10">
@@ -92,21 +92,21 @@ export const AuthPage = ({ showToast }) => {
             transition={{ delay: 0.2, type: "spring" }}
             className="inline-flex items-center gap-3"
           >
-            <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-[var(--cyan)] box-glow-cyan backdrop-blur-md">
+            <div className="w-12 h-12 bg-white border border-sky-100 rounded-2xl flex items-center justify-center text-sky-500 shadow-lg shadow-sky-500/20 backdrop-blur-md">
               <Hexagon className="w-7 h-7" strokeWidth={2.5} />
             </div>
-            <span className="text-2xl font-bold text-white tracking-tight font-display">ClassTrack</span>
+            <span className="text-2xl font-bold text-slate-900 tracking-tight font-display">ClassTrack</span>
           </motion.div>
         </div>
 
-        <div className="glass-panel-strong rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+        <div className="glass-panel-strong rounded-2xl p-8 relative overflow-hidden">
           {/* Subtle gradient border effect on top */}
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[var(--cyan)] via-[var(--primary)] to-[var(--cyan)] opacity-50" />
+          <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-sky-400 via-blue-500 to-sky-400" />
           
-          <h1 className="text-2xl font-bold text-white mb-2 tracking-tight">
+          <h1 className="text-2xl font-bold text-slate-900 mb-2 tracking-tight">
             {mode === 'login' ? 'Welcome back' : 'Create an account'}
           </h1>
-          <p className="text-sm text-[var(--text-muted)] mb-8">
+          <p className="text-sm text-slate-500 font-medium mb-8">
             {mode === 'login' ? 'Sign in to access your dashboard' : 'Start tracking your learning journey'}
           </p>
 
@@ -128,17 +128,17 @@ export const AuthPage = ({ showToast }) => {
                     placeholder="Adeena Javaid" 
                   />
                   <div>
-                    <label className="block text-xs font-medium text-[var(--text-muted)] mb-2 uppercase tracking-wider">Account Type</label>
+                    <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">Account Type</label>
                     <div className="grid grid-cols-2 gap-3">
                       {['student', 'teacher'].map(r => (
                         <button 
                           key={r} 
                           onClick={() => setRole(r)} 
                           type="button" 
-                          className={`py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
+                          className={`py-2.5 px-4 rounded-lg text-sm font-bold transition-all ${
                             role === r 
-                              ? 'bg-[var(--primary)] text-white shadow-lg shadow-[var(--primary)]/30' 
-                              : 'bg-white/5 text-[var(--text-muted)] hover:bg-white/10 hover:text-white border border-white/5'
+                              ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30 ring-2 ring-sky-500 ring-offset-2' 
+                              : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200'
                           }`}
                         >
                           {r.charAt(0).toUpperCase() + r.slice(1)}
@@ -173,7 +173,7 @@ export const AuthPage = ({ showToast }) => {
 
               <Button 
                 onClick={handleSubmit} 
-                variant="accent" 
+                variant="primary" 
                 size="lg" 
                 loading={loading} 
                 fullWidth 
@@ -184,11 +184,11 @@ export const AuthPage = ({ showToast }) => {
             </motion.div>
           </AnimatePresence>
 
-          <div className="text-center mt-6 text-sm text-[var(--text-muted)]">
+          <div className="text-center mt-6 text-sm text-slate-500 font-medium">
             {mode === 'login' ? "Don't have an account? " : 'Already have one? '}
             <button 
               onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }} 
-              className="text-white font-semibold hover:text-[var(--cyan)] transition-colors focus:outline-none"
+              className="text-sky-600 font-bold hover:text-sky-700 transition-colors focus:outline-none"
             >
               {mode === 'login' ? 'Sign up' : 'Sign in'}
             </button>
@@ -199,9 +199,9 @@ export const AuthPage = ({ showToast }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="text-center mt-8 text-xs text-[var(--text-muted)] tracking-wider uppercase font-medium"
+          className="text-center mt-8 text-xs text-slate-400 tracking-wider uppercase font-bold"
         >
-          Powered by Supabase · Built for teachers & students
+          ClassTrack LMS · Elevating Education
         </motion.div>
       </motion.div>
     </div>

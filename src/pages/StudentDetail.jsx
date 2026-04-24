@@ -42,36 +42,36 @@ export const StudentDetail = ({ student, setPage, showToast }) => {
       <div className="px-8 pt-6">
         <button 
           onClick={() => setPage('students')} 
-          className="flex items-center gap-1.5 text-xs text-[var(--text-muted)] hover:text-white transition-colors mb-4 focus:outline-none"
+          className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors mb-4 focus:outline-none"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back to students
         </button>
       </div>
       
-      <div className="px-8 pb-6 border-b border-white/10 flex justify-between items-end gap-5 flex-wrap">
+      <div className="px-8 pb-6 border-b border-slate-200 flex justify-between items-end gap-5 flex-wrap">
         <div className="flex items-center gap-5">
-          <Avatar name={student.full_name} size={64} variant="dark" />
+          <Avatar name={student.full_name} size={64} variant="accent" />
           <div>
-            <div className="text-[11px] font-semibold text-[var(--cyan)] uppercase tracking-[0.15em] mb-1">{student.grade || 'Student'}</div>
-            <h1 className="text-3xl font-bold tracking-tight text-white mb-1">{student.full_name}</h1>
-            <div className="text-sm text-[var(--text-muted)]">{student.email}</div>
+            <div className="text-[11px] font-bold text-sky-600 uppercase tracking-[0.15em] mb-1">{student.grade || 'Student'}</div>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-1">{student.full_name}</h1>
+            <div className="text-sm font-medium text-slate-500">{student.email}</div>
           </div>
         </div>
-        <Button onClick={emailParent} variant="accent"><Mail className="w-4 h-4 mr-2" /> Email parent</Button>
+        <Button onClick={emailParent} variant="primary"><Mail className="w-4 h-4 mr-2" /> Email parent</Button>
       </div>
 
-      <div className="px-8 border-b border-white/10 flex gap-1 bg-black/20">
+      <div className="px-8 border-b border-slate-200 flex gap-1 bg-slate-50">
         {['overview', 'attendance', 'assignments'].map(t => (
           <button 
             key={t} 
             onClick={() => setTab(t)} 
-            className={`px-5 py-4 text-sm font-medium capitalize transition-colors relative focus:outline-none ${tab === t ? 'text-white' : 'text-[var(--text-muted)] hover:text-white/80'}`}
+            className={`px-5 py-4 text-sm font-bold capitalize transition-colors relative focus:outline-none ${tab === t ? 'text-sky-700' : 'text-slate-500 hover:text-slate-900'}`}
           >
             {t}
             {tab === t && (
               <motion.div 
                 layoutId="studentDetailTab" 
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--cyan)] box-glow-cyan"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-500"
                 initial={false}
               />
             )}
@@ -97,15 +97,15 @@ export const StudentDetail = ({ student, setPage, showToast }) => {
                 </div>
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
                   <Card>
-                    <h3 className="text-base font-semibold text-white mb-5">Contact details</h3>
+                    <h3 className="text-base font-bold text-slate-900 mb-5">Contact details</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider font-semibold mb-1">Student Email</div>
-                        <div className="text-sm font-medium text-white">{student.email}</div>
+                        <div className="text-[11px] text-slate-500 uppercase tracking-wider font-bold mb-1">Student Email</div>
+                        <div className="text-sm font-bold text-slate-900">{student.email}</div>
                       </div>
                       <div>
-                        <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider font-semibold mb-1">Parent Email</div>
-                        <div className="text-sm font-medium text-white">{student.parent_email || <span className="text-[var(--text-muted)]">Not provided</span>}</div>
+                        <div className="text-[11px] text-slate-500 uppercase tracking-wider font-bold mb-1">Parent Email</div>
+                        <div className="text-sm font-bold text-slate-900">{student.parent_email || <span className="text-slate-400 font-medium">Not provided</span>}</div>
                       </div>
                     </div>
                   </Card>

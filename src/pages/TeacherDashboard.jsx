@@ -73,12 +73,12 @@ export const TeacherDashboard = ({ profile, setPage }) => {
           transition={{ delay: 0.5 }}
           className="flex justify-between items-center mb-4"
         >
-          <h3 className="text-base font-semibold text-white tracking-tight flex items-center gap-2">
-            <Clock className="w-4 h-4 text-[var(--cyan)]" /> Today's check-ins
+          <h3 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <Clock className="w-4 h-4 text-sky-500" /> Today's check-ins
           </h3>
           <button 
             onClick={() => setPage('students')} 
-            className="text-xs text-[var(--text-muted)] hover:text-white flex items-center gap-1 transition-colors font-medium focus:outline-none"
+            className="text-xs text-sky-600 hover:text-sky-800 flex items-center gap-1 transition-colors font-bold focus:outline-none"
           >
             View all <ChevronRight className="w-3 h-3" />
           </button>
@@ -96,19 +96,19 @@ export const TeacherDashboard = ({ profile, setPage }) => {
               variants={staggerContainer}
               initial="hidden"
               animate="show"
-              className="divide-y divide-white/5"
+              className="divide-y divide-slate-100"
             >
               {todayCheckins.map((c) => (
                 <motion.div 
                   key={c.id} 
                   variants={staggerItem}
-                  className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+                  className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <Avatar name={c.student?.full_name} size={38} />
+                    <Avatar name={c.student?.full_name} size={38} variant="blue" />
                     <div>
-                      <div className="text-sm font-semibold text-white">{c.student?.full_name || 'Unknown'}</div>
-                      <div className="text-xs text-[var(--text-muted)]">{c.subject || 'Class'}</div>
+                      <div className="text-sm font-bold text-slate-900">{c.student?.full_name || 'Unknown'}</div>
+                      <div className="text-xs font-medium text-slate-500">{c.subject || 'Class'}</div>
                     </div>
                   </div>
                   <Badge variant="green" icon={<span className="mr-1 inline-block w-1.5 h-1.5 rounded-full bg-emerald-400"></span>}>

@@ -10,7 +10,7 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { motion } from 'framer-motion';
 import { staggerContainer, staggerItem } from '../lib/animations';
-import { Plus, CheckCircle2, Trash2 } from 'lucide-react';
+import { Plus, CheckCircle2, Trash2, Mail, AlertTriangle } from 'lucide-react';
 
 export const TeacherAssignments = ({ profile, showToast }) => {
   const [assignments, setAssignments] = useState([]);
@@ -22,7 +22,7 @@ export const TeacherAssignments = ({ profile, showToast }) => {
   const load = useCallback(async () => {
     setLoading(true);
     const [{ data: asn }, { data: sts }] = await Promise.all([
-      supabase.from('assignments').select('*, student:profiles!student_id(full_name)').order('due_date', { ascending: false }),
+      supabase.from('assignments').select('*, student:profiles!student_id(full_name, email, parent_email)').order('due_date', { ascending: false }),
       supabase.from('profiles').select('id, full_name').eq('role', 'student').order('full_name')
     ]);
     setAssignments(asn || []); setStudents(sts || []); setLoading(false);
@@ -58,15 +58,68 @@ export const TeacherAssignments = ({ profile, showToast }) => {
 
   const pendingCount = assignments.filter(a => a.status === 'pending' || a.status === 'in_progress').length;
 
+  const emailOverdue = (a) => {
+    const studentEmail = a.student?.email;
+    const parentEmail = a.student?.parent_email;
+    if (!studentEmail) { showToast('No student email on file', 'error'); return; }
+    
+    const dueDate = new Date(a.due_date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    const subject = `Overdue Assignment: ${a.title}`;
+    const body = [
+      `Dear ${a.student?.full_name},`,
+      '',
+      `This is a reminder that the following assignment is overdue:`,
+      '',
+      `Assignment: ${a.title}`,
+      `Subject: ${a.subject}`,
+      `Due Date: ${dueDate}`,
+      `Total Marks: ${a.total_marks}`,
+      '',
+      `Please complete and submit this assignment at your earliest convenience.`,
+      '',
+      `Best regards,`,
+      `${profile.full_name}`,
+      `Lumina LMS`
+    ].join('%0D%0A');
+    
+    const cc = parentEmail ? `&cc=${encodeURIComponent(parentEmail)}` : '';
+    window.open(`mailto:${studentEmail}?subject=${encodeURIComponent(subject)}&body=${body}${cc}`, '_blank');
+    showToast(`Email drafted for ${a.student?.full_name}${parentEmail ? ' (CC: parent)' : ''}`, 'success');
+  };
+
+  const overdueAssignments = assignments.filter(a => {
+    const daysLeft = Math.ceil((new Date(a.due_date) - new Date()) / (1000 * 60 * 60 * 24));
+    return daysLeft < 0 && !['submitted', 'graded'].includes(a.status);
+  });
+
   return (
     <PageWrapper>
       <PageHeader 
         title="Assignments" 
         subtitle={`${assignments.length} total · ${pendingCount} pending`} 
         action={
-          <Button onClick={() => setShowAdd(!showAdd)} variant={showAdd ? 'ghost' : 'primary'}>
-            {showAdd ? 'Cancel' : <><Plus className="w-4 h-4 mr-1.5" /> New assignment</>}
-          </Button>
+          <div className="flex gap-2">
+            {overdueAssignments.length > 0 && (
+              <Button onClick={() => {
+                overdueAssignments.forEach(a => {
+                  const studentEmail = a.student?.email;
+                  const parentEmail = a.student?.parent_email;
+                  if (!studentEmail) return;
+                  const dueDate = new Date(a.due_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+                  const subject = `Overdue Assignment: ${a.title}`;
+                  const body = [`Dear ${a.student?.full_name},`, '', `Your assignment "${a.title}" (${a.subject}) was due on ${dueDate} and has not been submitted.`, '', `Please submit it as soon as possible.`, '', `Best regards,`, `${profile.full_name}`].join('%0D%0A');
+                  const cc = parentEmail ? `&cc=${encodeURIComponent(parentEmail)}` : '';
+                  window.open(`mailto:${studentEmail}?subject=${encodeURIComponent(subject)}&body=${body}${cc}`, '_blank');
+                });
+                showToast(`Drafts opened for ${overdueAssignments.length} overdue assignment(s)`, 'success');
+              }} variant="danger" size="sm">
+                <AlertTriangle className="w-4 h-4 mr-1.5" /> Email All Overdue ({overdueAssignments.length})
+              </Button>
+            )}
+            <Button onClick={() => setShowAdd(!showAdd)} variant={showAdd ? 'ghost' : 'primary'}>
+              {showAdd ? 'Cancel' : <><Plus className="w-4 h-4 mr-1.5" /> New assignment</>}
+            </Button>
+          </div>
         } 
       />
       <div className="p-8">
@@ -143,7 +196,20 @@ export const TeacherAssignments = ({ profile, showToast }) => {
                       <span className="text-xs font-medium text-slate-400">—</span>
                     )}
                   </div>
-                  <div className="flex justify-end">
+                  <div className="flex justify-end gap-1">
+                    {(() => {
+                      const daysLeft = Math.ceil((new Date(a.due_date) - new Date()) / (1000 * 60 * 60 * 24));
+                      const isOverdue = daysLeft < 0 && !['submitted', 'graded'].includes(a.status);
+                      return isOverdue ? (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); emailOverdue(a); }}
+                          className="p-2 text-amber-500 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors focus:outline-none"
+                          title="Email student about overdue"
+                        >
+                          <Mail className="w-4 h-4" />
+                        </button>
+                      ) : null;
+                    })()}
                     <button
                       onClick={(e) => deleteAssignment(a.id, e)}
                       className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors focus:outline-none opacity-0 group-hover:opacity-100"

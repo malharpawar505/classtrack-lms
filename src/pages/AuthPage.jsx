@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
-import { Hexagon, Mail, Lock, User as UserIcon } from 'lucide-react';
+import { Hexagon, Mail, Lock, User as UserIcon, ArrowLeft } from 'lucide-react';
 import Particles from '@tsparticles/react';
 import { loadSlim } from '@tsparticles/slim';
 
@@ -33,6 +33,19 @@ export const AuthPage = ({ showToast }) => {
 
   const handleSubmit = async () => {
     setError('');
+    if (mode === 'forgot') {
+      if (!email) { setError('Please enter your email address.'); return; }
+      setLoading(true);
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin
+        });
+        if (error) throw error;
+        showToast('Password reset email sent! Check your inbox.', 'success');
+        setMode('login');
+      } catch (err) { setError(friendlyError(err)); } finally { setLoading(false); }
+      return;
+    }
     if (!email || !password) { setError('Email and password are required.'); return; }
     if (mode === 'signup' && !fullName) { setError('Please enter your full name.'); return; }
     setLoading(true);
@@ -117,10 +130,10 @@ export const AuthPage = ({ showToast }) => {
           <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-sky-400 via-blue-500 to-sky-400" />
           
           <h1 className="text-2xl font-bold text-slate-900 mb-2 tracking-tight">
-            {mode === 'login' ? 'Welcome back' : 'Create an account'}
+            {mode === 'login' ? 'Welcome back' : mode === 'signup' ? 'Create an account' : 'Reset password'}
           </h1>
           <p className="text-sm text-slate-500 font-medium mb-8">
-            {mode === 'login' ? 'Sign in to access your dashboard' : 'Start tracking your learning journey'}
+            {mode === 'login' ? 'Sign in to access your dashboard' : mode === 'signup' ? 'Start tracking your learning journey' : 'Enter your email and we\'ll send you a reset link'}
           </p>
 
           <AnimatePresence mode="wait">
@@ -162,27 +175,44 @@ export const AuthPage = ({ showToast }) => {
                 </div>
               )}
 
-              <div className="space-y-4">
-                <Input 
-                  icon={<Mail className="w-4 h-4" />}
-                  label="Email" 
-                  type="email" 
-                  value={email} 
-                  onChange={e => setEmail(e.target.value)} 
-                  placeholder="you@example.com" 
-                  onKeyDown={e => e.key === 'Enter' && handleSubmit()} 
-                />
-                <Input 
-                  icon={<Lock className="w-4 h-4" />}
-                  label="Password" 
-                  type="password" 
-                  value={password} 
-                  onChange={e => setPassword(e.target.value)} 
-                  placeholder="••••••••" 
-                  onKeyDown={e => e.key === 'Enter' && handleSubmit()} 
-                  error={error} 
-                />
-              </div>
+              {mode !== 'forgot' && (
+                <div className="space-y-4">
+                  <Input 
+                    icon={<Mail className="w-4 h-4" />}
+                    label="Email" 
+                    type="email" 
+                    value={email} 
+                    onChange={e => setEmail(e.target.value)} 
+                    placeholder="you@example.com" 
+                    onKeyDown={e => e.key === 'Enter' && handleSubmit()} 
+                  />
+                  <Input 
+                    icon={<Lock className="w-4 h-4" />}
+                    label="Password" 
+                    type="password" 
+                    value={password} 
+                    onChange={e => setPassword(e.target.value)} 
+                    placeholder="••••••••" 
+                    onKeyDown={e => e.key === 'Enter' && handleSubmit()} 
+                    error={error} 
+                  />
+                </div>
+              )}
+
+              {mode === 'forgot' && (
+                <div className="space-y-4">
+                  <Input 
+                    icon={<Mail className="w-4 h-4" />}
+                    label="Email Address" 
+                    type="email" 
+                    value={email} 
+                    onChange={e => setEmail(e.target.value)} 
+                    placeholder="you@example.com" 
+                    onKeyDown={e => e.key === 'Enter' && handleSubmit()} 
+                    error={error}
+                  />
+                </div>
+              )}
 
               <Button 
                 onClick={handleSubmit} 
@@ -192,19 +222,41 @@ export const AuthPage = ({ showToast }) => {
                 fullWidth 
                 className="mt-6"
               >
-                {mode === 'login' ? 'Sign in' : 'Create account'}
+                {mode === 'login' ? 'Sign in' : mode === 'signup' ? 'Create account' : 'Send Reset Link'}
               </Button>
+
+              {mode === 'login' && (
+                <div className="text-center mt-4">
+                  <button 
+                    onClick={() => { setMode('forgot'); setError(''); }} 
+                    className="text-xs text-slate-500 hover:text-sky-600 transition-colors focus:outline-none font-medium"
+                  >
+                    Forgot your password?
+                  </button>
+                </div>
+              )}
             </motion.div>
           </AnimatePresence>
 
           <div className="text-center mt-6 text-sm text-slate-500 font-medium">
-            {mode === 'login' ? "Don't have an account? " : 'Already have one? '}
-            <button 
-              onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }} 
-              className="text-sky-600 font-bold hover:text-sky-700 transition-colors focus:outline-none"
-            >
-              {mode === 'login' ? 'Sign up' : 'Sign in'}
-            </button>
+            {mode === 'forgot' ? (
+              <button 
+                onClick={() => { setMode('login'); setError(''); }} 
+                className="text-sky-600 font-bold hover:text-sky-700 transition-colors focus:outline-none flex items-center gap-1.5 mx-auto"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" /> Back to sign in
+              </button>
+            ) : (
+              <>
+                {mode === 'login' ? "Don't have an account? " : 'Already have one? '}
+                <button 
+                  onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }} 
+                  className="text-sky-600 font-bold hover:text-sky-700 transition-colors focus:outline-none"
+                >
+                  {mode === 'login' ? 'Sign up' : 'Sign in'}
+                </button>
+              </>
+            )}
           </div>
         </div>
 

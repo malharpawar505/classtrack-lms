@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, createStudentAccount } from '../lib/supabase';
 import { PageHeader } from '../components/layout/PageHeader';
 import { PageWrapper } from '../components/layout/PageWrapper';
 import { Card } from '../components/ui/Card';
@@ -11,7 +11,7 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { motion } from 'framer-motion';
 import { staggerContainer, staggerItem } from '../lib/animations';
-import { Search, UserPlus, Trash2 } from 'lucide-react';
+import { Search, UserPlus, Trash2, Copy, X, CheckCircle2 } from 'lucide-react';
 
 export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
   const [students, setStudents] = useState([]);
@@ -20,6 +20,7 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
   const [search, setSearch] = useState('');
   const [form, setForm] = useState({ email: '', fullName: '', parentEmail: '', grade: '', password: '' });
   const [submitting, setSubmitting] = useState(false);
+  const [created, setCreated] = useState(null);
 
   const loadStudents = useCallback(async () => {
     setLoading(true);
@@ -40,21 +41,23 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
     if (form.password.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
     setSubmitting(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: form.email, password: form.password,
-        options: { data: { full_name: form.fullName, role: 'student' } }
+      const { needsEmailConfirm, error } = await createStudentAccount({
+        email: form.email, password: form.password, fullName: form.fullName,
+        grade: form.grade, parentEmail: form.parentEmail
       });
       if (error) throw error;
-      if (data.user) {
-        await supabase.from('profiles').update({
-          grade: form.grade, parent_email: form.parentEmail,
-          avatar: form.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-        }).eq('id', data.user.id);
-      }
+      setCreated({ name: form.fullName, email: form.email, password: form.password, needsEmailConfirm });
       showToast(`${form.fullName} added successfully`, 'success');
       setForm({ email: '', fullName: '', parentEmail: '', grade: '', password: '' });
       setShowAdd(false); loadStudents();
     } catch (err) { showToast(err.message || 'Failed to add student', 'error'); } finally { setSubmitting(false); }
+  };
+
+  const copyCredentials = async () => {
+    try {
+      await navigator.clipboard.writeText(`Lumina LMS login\nWebsite: ${window.location.origin}\nEmail: ${created.email}\nPassword: ${created.password}`);
+      showToast('Login details copied', 'success');
+    } catch { showToast('Could not copy — please copy manually', 'error'); }
   };
 
   const handleDeleteStudent = async (studentId, e) => {
@@ -87,7 +90,7 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
         title="Students" 
         subtitle={`${students.length} enrolled`} 
         action={
-          <Button onClick={() => setShowAdd(!showAdd)} variant={showAdd ? 'ghost' : 'primary'}>
+          <Button onClick={() => { setShowAdd(!showAdd); setCreated(null); }} variant={showAdd ? 'ghost' : 'primary'}>
             {showAdd ? 'Cancel' : <><UserPlus className="w-4 h-4 mr-2"/> Add student</>}
           </Button>
         } 
@@ -119,12 +122,42 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
           </Card>
         </motion.div>
 
+        {created && (
+          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+            <Card className="border border-emerald-200 bg-emerald-50 shadow-md">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 mb-1 flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-500" /> Account created for {created.name}
+                  </h3>
+                  <p className="text-xs font-medium text-slate-500 mb-3">
+                    {created.needsEmailConfirm
+                      ? 'Share these login details — the student must verify their email before signing in.'
+                      : 'Share these login details with the student. They can sign in right away.'}
+                  </p>
+                  <div className="inline-block rounded-lg border border-emerald-200 bg-white px-4 py-2.5 font-mono text-sm text-slate-900 leading-7">
+                    <div><span className="text-slate-400">Email&nbsp;&nbsp;&nbsp;&nbsp;</span>{created.email}</div>
+                    <div><span className="text-slate-400">Password&nbsp;</span>{created.password}</div>
+                  </div>
+                </div>
+                <button onClick={() => setCreated(null)} className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-emerald-100 rounded-lg transition-colors" title="Dismiss">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <Button onClick={copyCredentials} variant="primary" size="sm"><Copy className="w-4 h-4 mr-2" /> Copy login details</Button>
+                <Button onClick={() => setCreated(null)} variant="ghost" size="sm">Done</Button>
+              </div>
+            </Card>
+          </motion.div>
+        )}
+
         <div className="mb-6">
-          <Input 
-            value={search} 
-            onChange={e => setSearch(e.target.value)} 
-            placeholder="Search students by name or email..." 
-            icon={<Search className="w-4 h-4" />} 
+          <Input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search students by name or email..."
+            icon={<Search className="w-4 h-4" />}
           />
         </div>
 

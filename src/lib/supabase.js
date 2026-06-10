@@ -34,6 +34,26 @@ export const createStudentAccount = async ({ email, password, fullName, grade, p
   return { data, needsEmailConfirm, error: null };
 };
 
+// Sets a new password for an existing student via the serverless admin
+// endpoint (api/reset-student-password.js). Passwords can't be read back,
+// so resetting is the only way to hand an existing student fresh credentials.
+export const resetStudentPassword = async (studentId, newPassword) => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return { error: { message: 'Not signed in' } };
+  try {
+    const res = await fetch('/api/reset-student-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+      body: JSON.stringify({ studentId, newPassword })
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) return { error: { message: body.error || `Request failed (${res.status})` } };
+    return { error: null };
+  } catch {
+    return { error: { message: 'Could not reach the server. Note: this only works on the deployed site, not local dev.' } };
+  }
+};
+
 export const signUp = async (email, password, fullName, role = 'student') => {
   return await supabase.auth.signUp({
     email, password,

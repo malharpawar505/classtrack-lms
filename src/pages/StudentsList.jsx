@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { supabase, createStudentAccount } from '../lib/supabase';
+import { supabase, createStudentAccount, resetStudentPassword } from '../lib/supabase';
 import { PageHeader } from '../components/layout/PageHeader';
 import { PageWrapper } from '../components/layout/PageWrapper';
 import { Card } from '../components/ui/Card';
@@ -11,7 +11,7 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { motion } from 'framer-motion';
 import { staggerContainer, staggerItem } from '../lib/animations';
-import { Search, UserPlus, Trash2, Copy, X, CheckCircle2 } from 'lucide-react';
+import { Search, UserPlus, Trash2, Copy, X, CheckCircle2, KeyRound } from 'lucide-react';
 
 export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
   const [students, setStudents] = useState([]);
@@ -21,6 +21,9 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
   const [form, setForm] = useState({ email: '', fullName: '', parentEmail: '', grade: '', password: '' });
   const [submitting, setSubmitting] = useState(false);
   const [created, setCreated] = useState(null);
+  const [resetTarget, setResetTarget] = useState(null);
+  const [resetPassword, setResetPassword] = useState('');
+  const [resetting, setResetting] = useState(false);
 
   const loadStudents = useCallback(async () => {
     setLoading(true);
@@ -51,6 +54,27 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
       setForm({ email: '', fullName: '', parentEmail: '', grade: '', password: '' });
       setShowAdd(false); loadStudents();
     } catch (err) { showToast(err.message || 'Failed to add student', 'error'); } finally { setSubmitting(false); }
+  };
+
+  const genPassword = () => Math.random().toString(36).slice(2, 6) + Math.random().toString(36).slice(2, 6);
+
+  const openReset = (student, e) => {
+    e.stopPropagation();
+    setCreated(null);
+    setShowAdd(false);
+    setResetTarget(student);
+    setResetPassword(genPassword());
+  };
+
+  const handleReset = async () => {
+    if (resetPassword.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
+    setResetting(true);
+    const { error } = await resetStudentPassword(resetTarget.id, resetPassword);
+    setResetting(false);
+    if (error) { showToast(error.message, 'error'); return; }
+    showToast(`Password updated for ${resetTarget.full_name}`, 'success');
+    setCreated({ name: resetTarget.full_name, email: resetTarget.email, password: resetPassword, needsEmailConfirm: false, isReset: true });
+    setResetTarget(null);
   };
 
   const copyCredentials = async () => {
@@ -122,13 +146,40 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
           </Card>
         </motion.div>
 
+        {resetTarget && (
+          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+            <Card className="border border-sky-200 bg-sky-50 shadow-md">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1">
+                  <h3 className="text-base font-bold text-slate-900 mb-1 flex items-center gap-2">
+                    <KeyRound className="w-5 h-5 text-sky-500" /> Reset password for {resetTarget.full_name}
+                  </h3>
+                  <p className="text-xs font-medium text-slate-500 mb-3">
+                    Their old password stops working immediately. Share the new one after saving — you can edit the suggestion below.
+                  </p>
+                  <div className="max-w-sm">
+                    <Input label="New password" value={resetPassword} onChange={e => setResetPassword(e.target.value)} placeholder="Min 6 characters" />
+                  </div>
+                </div>
+                <button onClick={() => setResetTarget(null)} className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-sky-100 rounded-lg transition-colors" title="Cancel">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="flex gap-2 mt-2">
+                <Button onClick={handleReset} variant="primary" size="sm" loading={resetting}>Set new password</Button>
+                <Button onClick={() => setResetTarget(null)} variant="ghost" size="sm">Cancel</Button>
+              </div>
+            </Card>
+          </motion.div>
+        )}
+
         {created && (
           <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
             <Card className="border border-emerald-200 bg-emerald-50 shadow-md">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h3 className="text-base font-bold text-slate-900 mb-1 flex items-center gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-500" /> Account created for {created.name}
+                    <CheckCircle2 className="w-5 h-5 text-emerald-500" /> {created.isReset ? `New password set for ${created.name}` : `Account created for ${created.name}`}
                   </h3>
                   <p className="text-xs font-medium text-slate-500 mb-3">
                     {created.needsEmailConfirm
@@ -171,7 +222,7 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
           </Card>
         ) : (
           <Card padding="p-0" className="overflow-hidden">
-            <div className="grid grid-cols-[2fr_1fr_1.5fr_1fr_40px] p-3 border-b border-slate-100 bg-slate-50">
+            <div className="grid grid-cols-[2fr_1fr_1.5fr_1fr_76px] p-3 border-b border-slate-100 bg-slate-50">
               {['Student', 'Grade', 'Parent Email', 'This Month', ''].map(h => (
                 <div key={h} className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{h}</div>
               ))}
@@ -182,7 +233,7 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
                   key={s.id} 
                   variants={staggerItem}
                   onClick={() => { setSelectedStudent(s); setPage('student-detail'); }} 
-                  className="grid grid-cols-[2fr_1fr_1.5fr_1fr_40px] p-4 items-center cursor-pointer hover:bg-slate-50 transition-colors group"
+                  className="grid grid-cols-[2fr_1fr_1.5fr_1fr_76px] p-4 items-center cursor-pointer hover:bg-slate-50 transition-colors group"
                 >
                   <div className="flex items-center gap-3">
                     <Avatar name={s.full_name} size={36} variant="blue" />
@@ -198,7 +249,14 @@ export const StudentsList = ({ setSelectedStudent, setPage, showToast }) => {
                       {s.attendance_count} classes
                     </Badge>
                   </div>
-                  <div className="flex justify-end">
+                  <div className="flex justify-end gap-1">
+                    <button
+                      onClick={(e) => openReset(s, e)}
+                      className="p-2 text-slate-400 hover:text-sky-600 hover:bg-sky-50 rounded-lg transition-colors focus:outline-none"
+                      title="Reset Password"
+                    >
+                      <KeyRound className="w-4 h-4" />
+                    </button>
                     <button
                       onClick={(e) => handleDeleteStudent(s.id, e)}
                       className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors focus:outline-none"
